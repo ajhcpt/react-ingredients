@@ -1,0 +1,1 @@
+console.error("SyntaxError: /home/andrew/projects/reactJs-for-beginners/react-skeleton/src/components/List.jsx: Unexpected token (16:0) while parsing file: /home/andrew/projects/reactJs-for-beginners/react-skeleton/src/components/List.jsx");
