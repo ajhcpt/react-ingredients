@@ -4,13 +4,13 @@ var ListItem = require('./ListItem.jsx');
 var List = React.createClass({
   render: function() {
 
-    var createItems = function(text, index) {
+    var createItem = function(text, index) {
       return <ListItem key={index + text} text={text} />;
     };
 
-    return (<ul>{this,props.items.map(createItems)}</ul>);
+    return (<ul>{this.props.items.map(createItem)}</ul>);
   }
 
 });
 
-modules.export = List;
+module.exports = List;

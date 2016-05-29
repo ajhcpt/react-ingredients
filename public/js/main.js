@@ -35,18 +35,18 @@ var EventListener = {
    * @param {function} callback Callback function.
    * @return {object} Object with a `remove` method.
    */
-  listen: function (target, eventType, callback) {
+  listen: function listen(target, eventType, callback) {
     if (target.addEventListener) {
       target.addEventListener(eventType, callback, false);
       return {
-        remove: function () {
+        remove: function remove() {
           target.removeEventListener(eventType, callback, false);
         }
       };
     } else if (target.attachEvent) {
       target.attachEvent('on' + eventType, callback);
       return {
-        remove: function () {
+        remove: function remove() {
           target.detachEvent('on' + eventType, callback);
         }
       };
@@ -61,11 +61,11 @@ var EventListener = {
    * @param {function} callback Callback function.
    * @return {object} Object with a `remove` method.
    */
-  capture: function (target, eventType, callback) {
+  capture: function capture(target, eventType, callback) {
     if (target.addEventListener) {
       target.addEventListener(eventType, callback, true);
       return {
-        remove: function () {
+        remove: function remove() {
           target.removeEventListener(eventType, callback, true);
         }
       };
@@ -79,7 +79,7 @@ var EventListener = {
     }
   },
 
-  registerDefault: function () {}
+  registerDefault: function registerDefault() {}
 };
 
 module.exports = EventListener;
@@ -203,7 +203,7 @@ module.exports = camelizeStyleName;
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @typechecks
+ * 
  */
 
 var isTextNode = require('./isTextNode');
@@ -212,10 +212,6 @@ var isTextNode = require('./isTextNode');
 
 /**
  * Checks if a given DOM node contains or is another DOM node.
- *
- * @param {?DOMNode} outerNode Outer DOM node.
- * @param {?DOMNode} innerNode Inner DOM node.
- * @return {boolean} True if `outerNode` contains or is `innerNode`.
  */
 function containsNode(outerNode, innerNode) {
   if (!outerNode || !innerNode) {
@@ -226,7 +222,7 @@ function containsNode(outerNode, innerNode) {
     return false;
   } else if (isTextNode(innerNode)) {
     return containsNode(outerNode, innerNode.parentNode);
-  } else if (outerNode.contains) {
+  } else if ('contains' in outerNode) {
     return outerNode.contains(innerNode);
   } else if (outerNode.compareDocumentPosition) {
     return !!(outerNode.compareDocumentPosition(innerNode) & 16);
@@ -462,6 +458,7 @@ module.exports = createNodesFromMarkup;
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * 
  */
 
 function makeEmptyFunction(arg) {
@@ -475,7 +472,7 @@ function makeEmptyFunction(arg) {
  * primarily useful idiomatically for overridable function endpoints which
  * always need to be callable, since JS lacks a null-call idiom ala Cocoa.
  */
-function emptyFunction() {}
+var emptyFunction = function emptyFunction() {};
 
 emptyFunction.thatReturns = makeEmptyFunction;
 emptyFunction.thatReturnsFalse = makeEmptyFunction(false);
@@ -916,7 +913,7 @@ var invariant = require('./invariant');
  * @param {object} obj
  * @return {object}
  */
-var keyMirror = function (obj) {
+var keyMirror = function keyMirror(obj) {
   var ret = {};
   var key;
   !(obj instanceof Object && !Array.isArray(obj)) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'keyMirror(...): Argument must be an object.') : invariant(false) : void 0;
@@ -954,7 +951,7 @@ module.exports = keyMirror;
  * 'xa12' in that case. Resolve keys you want to use once at startup time, then
  * reuse those resolutions.
  */
-var keyOf = function (oneKeyObj) {
+var keyOf = function keyOf(oneKeyObj) {
   var key;
   for (key in oneKeyObj) {
     if (!oneKeyObj.hasOwnProperty(key)) {
@@ -1026,6 +1023,7 @@ module.exports = mapObject;
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
+ * 
  * @typechecks static-only
  */
 
@@ -1033,9 +1031,6 @@ module.exports = mapObject;
 
 /**
  * Memoizes the return value of a function that accepts one string argument.
- *
- * @param {function} callback
- * @return {function}
  */
 
 function memoizeStringOnly(callback) {
@@ -1096,11 +1091,11 @@ var performanceNow;
  * because of Facebook's testing infrastructure.
  */
 if (performance.now) {
-  performanceNow = function () {
+  performanceNow = function performanceNow() {
     return performance.now();
   };
 } else {
-  performanceNow = function () {
+  performanceNow = function performanceNow() {
     return Date.now();
   };
 }
@@ -1199,7 +1194,7 @@ var emptyFunction = require('./emptyFunction');
 var warning = emptyFunction;
 
 if (process.env.NODE_ENV !== 'production') {
-  warning = function (condition, format) {
+  warning = function warning(condition, format) {
     for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
       args[_key - 2] = arguments[_key];
     }
@@ -19672,26 +19667,24 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":55}],168:[function(require,module,exports){
 var React = require('react');
-var ListItem = require("./ListItem.jsx");
-
-var ingredients = [{ "id": 2, "text": "ham" }, { "id": 3, "text": "cheese" }];
+var ListItem = require('./ListItem.jsx');
 
 var List = React.createClass({
-  displayName: "List",
+  displayName: 'List',
 
   render: function () {
-    var listItems = ingredients.map(item => {
-      console.log(item.id);
-      console.log(item.text);
-      return React.createElement(ListItem, { key: item.id, ingredient: item.text });
-    });
+
+    var createItem = function (text, index) {
+      return React.createElement(ListItem, { key: index + text, text: text });
+    };
 
     return React.createElement(
-      "ul",
+      'ul',
       null,
-      listItems
+      this.props.items.map(createItem)
     );
   }
+
 });
 
 module.exports = List;
@@ -19709,7 +19702,7 @@ var ListItem = React.createClass({
       React.createElement(
         'h4',
         null,
-        this.props.ingredient
+        this.props.text
       )
     );
   }
@@ -19719,9 +19712,70 @@ module.exports = ListItem;
 
 },{"react":167}],170:[function(require,module,exports){
 var React = require('react');
+var List = require('./List.jsx');
+
+var ListManager = React.createClass({
+  displayName: 'ListManager',
+
+  getInitialState: function () {
+    return { items: [], newItemText: '' };
+  },
+
+  onChange: function (element) {
+    this.setState({ newItemText: element.target.value });
+  },
+
+  handleSubmit: function (element) {
+    element.preventDefault();
+
+    var currentItems = this.state.items;
+    currentItems.push(this.state.newItemText);
+    this.setState({ items: currentItems, newItemText: '' });
+  },
+
+  render: function () {
+    return React.createElement(
+      'div',
+      { className: 'col-sm-4' },
+      React.createElement(
+        'div',
+        { className: 'panel panel-default' },
+        React.createElement(
+          'div',
+          { className: 'panel-heading' },
+          React.createElement(
+            'h3',
+            null,
+            this.props.title
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'panel-body' },
+          React.createElement(
+            'form',
+            { onSubmit: this.handleSubmit },
+            React.createElement('input', { onChange: this.onChange, value: this.state.newItemText }),
+            React.createElement(
+              'button',
+              { className: 'btn btn-primary' },
+              'Add'
+            )
+          ),
+          React.createElement(List, { items: this.state.items })
+        )
+      )
+    );
+  }
+});
+
+module.exports = ListManager;
+
+},{"./List.jsx":168,"react":167}],171:[function(require,module,exports){
+var React = require('react');
 var ReactDom = require('react-dom');
-var List = require('./components/List.jsx');
+var ListManager = require('./components/ListManager.jsx');
 
-ReactDom.render(React.createElement(List, null), document.getElementById('ingredients'));
+ReactDom.render(React.createElement(ListManager, { title: 'Ingredients' }), document.getElementById('ingredients'));
 
-},{"./components/List.jsx":168,"react":167,"react-dom":29}]},{},[170]);
+},{"./components/ListManager.jsx":170,"react":167,"react-dom":29}]},{},[171]);
